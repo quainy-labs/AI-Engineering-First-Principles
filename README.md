@@ -2,10 +2,6 @@
 
 **Build Reliable Intelligent Systems That Improve Real Work**
 
-This repository contains the working manuscript for Quainy's AI Engineering book.
-
-This is a builder's field manual, not an AI encyclopedia. It teaches one durable capability:
-
 > Take a messy real-world workflow, decide whether AI is useful, design a reliable intelligent system, build it, evaluate it, deploy it responsibly, and improve it with feedback.
 
 ## Reader Promise
@@ -32,6 +28,9 @@ After finishing this book, reader should be able to:
 
 Each chapter ends with a proof artifact. No chapter ends with only "understanding."
 
+## Research & Idea
+
+[AI Engineering Blueprint](AI_ENGINEERING_BOOK_BLUEPRINT.md)
 
 ## Table of Contents
 
@@ -44,7 +43,7 @@ Capability: decide what to build and why.
 3. [From Messy Workflow to System Boundary](part-1-problem-first-ai-engineering/03-from-messy-workflow-to-system-boundary.md)
 4. [Metrics, Baselines, and Meaningful Impact](part-1-problem-first-ai-engineering/04-metrics-baselines-meaningful-impact.md)
 
-Project: [Workflow Teardown](01-workflow-teardown.md)
+Project: [Workflow Teardown](projects/01-workflow-teardown.md)
 
 ### Part 2: Information Foundations
 
@@ -55,7 +54,7 @@ Capability: turn messy knowledge into usable system context.
 7. [Search, Ranking, and Information Architecture](part-2-information-foundations/07-search-ranking-information-architecture.md)
 8. [Embeddings and Semantic Retrieval](part-2-information-foundations/08-embeddings-semantic-retrieval.md)
 
-Project: [Knowledge Base](02-knowledge-base.md)
+Project: [Knowledge Base](projects/02-knowledge-base.md)
 
 ### Part 3: Models as Components
 
@@ -66,7 +65,7 @@ Capability: use models with understanding, not worship.
 11. [Prompting as Interface Design](part-3-models-as-components/11-prompting-as-interface-design.md)
 12. [Model Failure Modes and Error Analysis](part-3-models-as-components/12-model-failure-modes-error-analysis.md)
 
-Project: [Structured Extraction System](03-structured-extraction-system.md)
+Project: [Structured Extraction System](projects/03-structured-extraction-system.md)
 
 ### Part 4: Grounded AI Systems
 
@@ -77,7 +76,7 @@ Capability: build systems that answer from trusted knowledge.
 15. [RAG Evaluation](part-4-grounded-ai-systems/15-rag-evaluation.md)
 16. [From Assistant Demo to Knowledge Product](part-4-grounded-ai-systems/16-from-assistant-demo-to-knowledge-product.md)
 
-Project: [Grounded Research Assistant](04-grounded-research-assistant.md)
+Project: [Grounded Research Assistant](projects/04-grounded-research-assistant.md)
 
 ### Part 5: Tools, Workflows, and Agents
 
@@ -88,7 +87,7 @@ Capability: build AI systems that take bounded action.
 19. [Memory, State, and Human Approval](part-5-tools-workflows-agents/19-memory-state-human-approval.md)
 20. [Agents Without Hype](part-5-tools-workflows-agents/20-agents-without-hype.md)
 
-Project: [Operations Assistant](05-operations-assistant.md)
+Project: [Operations Assistant](projects/05-operations-assistant.md)
 
 ### Part 6: Reliable Production AI
 
@@ -99,7 +98,7 @@ Capability: ship systems people can trust.
 23. [Security, Privacy, and Risk Management](part-6-reliable-production-ai/23-security-privacy-risk-management.md)
 24. [Deployment, Feedback, and Continuous Improvement](part-6-reliable-production-ai/24-deployment-feedback-continuous-improvement.md)
 
-Project: [Production Hardening](06-production-hardening.md)
+Project: [Production Hardening](projects/06-production-hardening.md)
 
 ## Capstone
 
