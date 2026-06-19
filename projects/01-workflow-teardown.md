@@ -1,194 +1,188 @@
-# Project 1: Workflow Teardown
+# Project 1: Support Workflow Intelligence Console
 
-## Goal
+## Build
 
-Analyze one real workflow and decide where AI can create useful, measurable improvement.
+Build a small app that analyzes a real or sample support workflow and identifies where AI should help, where code should help, and where humans must stay in control.
 
-Do not build model yet.
+This is not a document exercise. It is a workflow analysis product.
 
-Build clarity.
+## User
 
-## Output
+Support lead, operations lead, or founder who wants to understand repeated support work before building AI automation.
 
-Create folder:
+## Product Outcome
 
-```text
-projects/workflow-teardown/
+User uploads or enters support tickets. System produces:
+
+- workflow map;
+- task breakdown;
+- automation opportunity score;
+- AI necessity table;
+- baseline metrics;
+- risk notes;
+- recommended first automation.
+
+## Sample Data
+
+Use CSV or JSON:
+
+```csv
+ticket_id,created_at,category,customer_message,resolution,minutes_to_resolve,escalated
+T001,2026-01-10,billing,"I was charged twice","Refunded duplicate charge",18,true
+T002,2026-01-11,access,"I cannot reset my API key","Sent reset instructions",7,false
 ```
 
-Inside it, produce:
+Minimum dataset:
 
-```text
-system-brief.md
-ai-necessity-table.md
-workflow-boundary.md
-baseline-and-eval-plan.md
-```
+- 30 tickets;
+- 5 categories;
+- resolution text;
+- time-to-resolve field;
+- escalation flag.
 
-## Choose Workflow
+## Core Features
 
-Pick workflow with:
+### 1. Ticket Import
 
-- repeated work;
-- real user;
-- messy information;
-- visible output;
-- measurable baseline;
-- low enough risk for first project.
-
-Good examples:
-
-- answering repeated support tickets;
-- summarizing research notes;
-- reviewing policy documents;
-- extracting invoice data;
-- creating first draft of sales follow-up;
-- searching internal docs;
-- triaging inbound requests.
-
-Avoid:
-
-- vague "personal productivity";
-- high-stakes medical/legal decisions;
-- fully automated financial approvals;
-- tasks with no real user;
-- tasks where simple form solves problem.
-
-## Step 1: System Brief
-
-Create `system-brief.md`.
-
-Template:
-
-```text
-System name:
-User:
-Current workflow:
-Pain:
-Baseline:
 Input:
-Output:
-Information sources:
-AI role:
-Non-AI role:
-Human role:
-Success metric:
-Failure modes:
-Proof artifact:
-```
 
-Pass criteria:
+- CSV upload;
+- JSON file;
+- or pasted rows.
 
-- real user named;
-- current workflow specific;
-- baseline measurable;
-- AI role narrow;
-- human role explicit.
+System validates required fields:
 
-## Step 2: AI Necessity Table
+- `ticket_id`
+- `customer_message`
+- `resolution`
+- `minutes_to_resolve`
+- `escalated`
 
-Create `ai-necessity-table.md`.
+### 2. Workflow Step Classifier
 
-Template:
+Classify each ticket into workflow tasks:
 
-| Task | Best method | Reason | Risk if AI owns it |
-|---|---|---|---|
-|  | Deterministic / retrieval / model / human |  |  |
+- information lookup;
+- policy decision;
+- account lookup;
+- draft response;
+- refund/action;
+- escalation;
+- unclear.
 
-Use categories:
+Start with rules. Add model classification only after rules fail.
+
+### 3. AI Necessity Analyzer
+
+For each workflow task, assign best method:
 
 - deterministic code;
-- database lookup;
+- database/API lookup;
 - search/retrieval;
 - structured extraction;
 - generation;
 - tool action;
 - human decision.
 
-Pass criteria:
+### 4. Baseline Dashboard
 
-- exact rules assigned to code;
-- permissions assigned to code/human;
-- ambiguous language tasks assigned to AI only where useful;
-- risky decisions assigned to human.
+Show:
 
-## Step 3: Workflow Boundary
+- ticket volume by category;
+- median resolution time;
+- escalation rate;
+- top repeated issues;
+- estimated minutes spent per category;
+- candidate automation areas.
 
-Create `workflow-boundary.md`.
+### 5. Recommendation Report
 
-Template:
-
-```text
-Trigger:
-User:
-Input:
-Output:
-Step 1:
-Step 2:
-Step 3:
-Decision points:
-Human approval points:
-Data sources:
-External tools:
-Out of scope:
-Failure modes:
-```
-
-Then add ownership table:
-
-| Step | Owner | Notes |
-|---|---|---|
-|  | Code / retrieval / model / human / external service |  |
-
-Pass criteria:
-
-- every step has owner;
-- approval points explicit;
-- out-of-scope cases listed;
-- data sources named.
-
-## Step 4: Baseline and Eval Plan
-
-Create `baseline-and-eval-plan.md`.
-
-Template:
-
-| Metric | Current baseline | Target | How measured |
-|---|---:|---:|---|
-| Work metric |  |  |  |
-| Quality metric |  |  |  |
-| System metric |  |  |  |
-
-Then define eval set:
+Generate first automation recommendation:
 
 ```text
-Easy cases: 10
-Normal cases: 10
-Edge cases: 5
-Should-refuse cases: 5
+Automate: draft answer for API key reset tickets
+Why: high volume, low risk, repeated answer, no account mutation
+Do not automate: refund approval
+Why: policy/account-specific, financial action, needs approval
 ```
 
-Pass criteria:
+## Architecture
 
-- at least one work metric;
-- at least one quality metric;
-- at least one system metric;
-- should-refuse cases included;
-- target defined.
+```text
+CSV/JSON input
+-> validator
+-> ticket normalizer
+-> rule/model classifier
+-> metrics calculator
+-> automation scorer
+-> report generator
+-> dashboard or CLI output
+```
 
-## Final Review
+## Data Model
 
-Answer:
+```json
+{
+  "ticket_id": "T001",
+  "message": "I was charged twice",
+  "resolution": "Refunded duplicate charge",
+  "category": "billing",
+  "minutes_to_resolve": 18,
+  "escalated": true,
+  "workflow_tasks": ["policy_decision", "financial_action"],
+  "recommended_method": "human_decision",
+  "risk_level": "high"
+}
+```
 
-1. What should improve?
-2. Who benefits?
-3. What is baseline?
-4. What should AI do?
-5. What should AI not do?
-6. What can fail?
-7. What proof will show impact?
+## Suggested Implementation
 
-If these answers are clear, workflow is ready for Part 2.
+Start simple:
 
-If not, do not build. Observe more real work.
+- Python CLI with CSV input;
+- or local web app;
+- or notebook pipeline.
 
+Components:
+
+- `load_tickets`
+- `validate_tickets`
+- `classify_task`
+- `calculate_baseline`
+- `score_automation_opportunity`
+- `generate_report`
+
+## Evaluation
+
+Create 20 labeled tickets.
+
+Measure:
+
+- task classification accuracy;
+- automation recommendation quality;
+- false automation risk;
+- baseline metric correctness.
+
+Acceptance:
+
+- identifies top 3 repeated workflows;
+- separates AI-suitable tasks from deterministic/human tasks;
+- flags high-risk automation candidates;
+- produces readable recommendation.
+
+## What Learner Understands
+
+- AI starts from workflow, not model.
+- Not all repeated work should be automated.
+- Baselines create useful project direction.
+- Human approval can be designed before any model call.
+
+## Extension
+
+Add:
+
+- model-assisted classification;
+- editable labels;
+- export to `system-brief.md`;
+- project recommendation score;
+- before/after simulation.

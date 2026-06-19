@@ -1,91 +1,118 @@
-# Project 2: Knowledge Base
+# Project 2: Knowledge Base Search Engine
 
-## Goal
+## Build
 
-Build information foundation for a real workflow.
+Build a searchable knowledge base over a small document collection with keyword search, metadata filters, semantic search, and retrieval evaluation.
 
-Do not build chat yet.
+This project is not a RAG chatbot yet. It is the retrieval system that a trustworthy assistant depends on.
 
-Build reliable retrieval.
+## User
 
-## Output
+Support teammate, researcher, student, or operator who needs to find trusted information quickly.
 
-Create:
+## Product Outcome
+
+User can search documents and see:
+
+- ranked results;
+- source metadata;
+- matched snippets;
+- authority level;
+- last updated date;
+- why result was retrieved;
+- retrieval quality report.
+
+## Sample Data
+
+Use 20-50 markdown files:
 
 ```text
-projects/knowledge-base/
-  information-map.md
-  output-schema.md
-  retrieval-design.md
-  semantic-search-eval.md
+docs/
+  billing/refund-policy.md
+  billing/invoice-admins.md
+  access/api-key-reset.md
+  access/production-log-access.md
+  product/release-notes-2026-01.md
 ```
 
-## Step 1: Information Map
+Each document needs frontmatter:
 
-Identify:
+```yaml
+title: Refund Policy
+owner: Support Ops
+audience: support
+authority: approved
+last_updated: 2026-01-10
+tags: [billing, refunds]
+```
 
-- structured data;
-- documents;
-- state;
-- source owners;
-- freshness rules;
-- access rules;
-- unknown information.
+## Core Features
 
-Pass:
+### 1. Document Ingestion
 
-- exact facts have source of truth;
-- documents have authority order;
-- state has lifespan.
-
-## Step 2: Output Schema
-
-Design one structured output needed by workflow.
-
-Examples:
-
-- support ticket classification;
-- invoice field extraction;
-- policy risk label;
-- document summary record;
-- search result object.
-
-Pass:
-
-- schema fields typed;
-- validation rules defined;
-- invalid examples included.
-
-## Step 3: Retrieval Design
-
-Create document metadata:
+Read markdown files, extract:
 
 - title;
-- source;
+- headings;
+- body;
+- owner;
+- tags;
+- authority;
+- last updated;
+- path.
+
+### 2. Keyword Search
+
+Implement simple keyword/inverted-index search.
+
+Return:
+
+- document title;
+- snippet;
+- score;
+- matched terms.
+
+### 3. Metadata Filtering
+
+Support filters:
+
+- tag;
 - owner;
 - audience;
-- product area;
+- authority;
 - last updated;
-- authority level;
-- document type.
 
-Create 20 test queries with expected documents.
+Important rule:
 
-Pass:
+Search should not return forbidden/stale docs when filter excludes them.
 
-- canonical sources known;
-- stale/forbidden sources named;
-- expected results defined.
+### 4. Semantic Search
 
-## Step 4: Semantic Search Eval
+Add embedding-based similarity search.
 
-Compare:
+Can be:
 
-- keyword retrieval;
-- semantic retrieval;
-- hybrid retrieval.
+- local embedding model;
+- API embedding model;
+- simple placeholder vectors for learning if no model access.
 
-Track:
+The system should compare keyword vs semantic results.
+
+### 5. Retrieval Evaluation
+
+Create `eval_queries.json`:
+
+```json
+[
+  {
+    "query": "How do I reset an API key?",
+    "expected_doc": "access/api-key-reset.md",
+    "forbidden_docs": ["product/release-notes-2026-01.md"]
+  }
+]
+```
+
+Report:
 
 - top-1 accuracy;
 - top-3 recall;
@@ -93,16 +120,88 @@ Track:
 - forbidden-source rate;
 - distractor rate.
 
-## Final Review
+## Architecture
 
-Answer:
+```text
+docs/
+-> document loader
+-> metadata parser
+-> chunker
+-> keyword index
+-> embedding index
+-> search API
+-> evaluation runner
+-> search UI/CLI
+```
 
-1. What information does system need?
-2. What is source of truth?
-3. What structure does downstream code need?
-4. Which queries fail keyword search?
-5. Which queries fail semantic search?
-6. What retrieval method is best for this workflow?
+## Data Model
 
-If these are clear, workflow is ready for model interface design.
+```json
+{
+  "doc_id": "access/api-key-reset.md",
+  "title": "Reset API Key",
+  "owner": "Platform Team",
+  "authority": "approved",
+  "last_updated": "2026-01-10",
+  "tags": ["access", "api"],
+  "chunks": [
+    {
+      "chunk_id": "access/api-key-reset.md#1",
+      "heading": "Reset Process",
+      "text": "To reset an API key..."
+    }
+  ]
+}
+```
 
+## Suggested Implementation
+
+Start as CLI:
+
+```bash
+search "reset api key" --mode keyword
+search "change billing admin" --mode semantic
+evaluate-retrieval
+```
+
+Then optional web UI:
+
+- search box;
+- filters;
+- result list;
+- metadata panel;
+- eval report view.
+
+## Evaluation
+
+Use 20 queries:
+
+- 8 direct keyword queries;
+- 6 paraphrased semantic queries;
+- 3 edge queries;
+- 3 should-refuse/unavailable queries.
+
+Acceptance:
+
+- keyword search works for exact terms;
+- semantic search helps at least 3 paraphrased queries;
+- metadata filters change results correctly;
+- eval report identifies failures.
+
+## What Learner Understands
+
+- Retrieval quality controls answer quality.
+- Metadata often matters more than model choice.
+- Semantic search helps, but can retrieve plausible wrong results.
+- Evaluation must inspect retrieval before generation.
+
+## Extension
+
+Add:
+
+- hybrid search;
+- reranking;
+- stale document warnings;
+- synonym dictionary;
+- search analytics;
+- admin page for document quality.
