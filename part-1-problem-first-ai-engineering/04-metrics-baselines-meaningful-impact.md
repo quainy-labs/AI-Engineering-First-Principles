@@ -1,5 +1,7 @@
 # Chapter 4: Metrics, Baselines, and Meaningful Impact
 
+Chapter 3 defined system boundary. This chapter defines proof. Without baseline and metrics, even a working AI system is only a convincing story.
+
 ## Real Problem
 
 A team says:
@@ -93,6 +95,15 @@ Measure engineering constraints:
 
 Good project uses at least one metric from each type.
 
+These metrics become engineering constraints in later parts:
+
+- software architecture must support measurement;
+- data pipelines must preserve quality and lineage;
+- model interfaces must produce evaluable outputs;
+- retrieval systems must expose source quality;
+- tools and agents must produce traces;
+- production systems must monitor cost, latency, and risk.
+
 ## Minimal Build
 
 Create baseline table:
@@ -181,5 +192,6 @@ Include:
 
 ## Next
 
-Part 2 starts with information. Once problem and metrics are clear, system needs reliable data, documents, and state.
+Part 1 answered what should be built, where AI belongs, what boundary exists, and how success is measured.
 
+Next, Part 2 should start with software foundations for AI systems. Once problem and metrics are clear, learner must understand where AI components live: APIs, services, storage, workers, background jobs, auth, permissions, and system boundaries. Only then should the book move into data, documents, models, retrieval, tools, production, and governance.

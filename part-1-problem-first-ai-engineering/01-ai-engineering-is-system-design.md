@@ -23,6 +23,14 @@ Same phrase, many systems. If builder starts with model choice, they have alread
 
 AI engineering begins before model selection. It begins with system design.
 
+This chapter starts the book's full path:
+
+```text
+problem -> software -> data -> models -> retrieval -> interfaces -> action -> production -> governance
+```
+
+You begin with problem because every later engineering choice depends on what work should improve. Software architecture, data pipelines, model selection, retrieval, tools, evals, and security are all downstream of this first decision.
+
 ## Bad Default Solution
 
 Common path:
@@ -78,6 +86,18 @@ This changes engineering:
 - system needs fallback behavior.
 
 AI engineering is the discipline of deciding which parts should be deterministic, which parts should use learned models, which parts need retrieval, and which parts require human judgment.
+
+That means AI engineering is not one skill. It is a chain of decisions:
+
+- problem decision: should this be built?
+- software decision: what system shape supports it?
+- data decision: what information does it need?
+- model decision: where does learned behavior help?
+- retrieval decision: what knowledge must be grounded?
+- interface decision: how do users and models communicate?
+- action decision: what tools can system safely use?
+- production decision: how is quality measured and maintained?
+- governance decision: what risks, permissions, and responsibilities exist?
 
 ## System Decision
 
@@ -224,5 +244,4 @@ Include:
 
 ## Next
 
-Next chapter asks harder question: when should you refuse to use AI?
-
+This chapter defined AI engineering as system design. Next chapter asks harder question before any architecture: when should you refuse to use AI?

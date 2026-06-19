@@ -1,5 +1,7 @@
 # Chapter 2: When Not to Use AI
 
+Chapter 1 established that AI engineering is system design, not model selection. This chapter sharpens that idea: good system design sometimes means refusing AI.
+
 ## Real Problem
 
 A team wants AI to process refund requests.
@@ -81,6 +83,8 @@ Use this ladder before adding AI:
 8. Does risky step require human approval?
 
 Prefer simplest system that meets need.
+
+This ladder protects later parts of the book. Before learning app architecture, data pipelines, models, retrieval, tools, or agents, you need a habit: put each responsibility in the simplest reliable component.
 
 ## Minimal Build
 
@@ -177,5 +181,4 @@ Include:
 
 ## Next
 
-Next chapter turns chosen problem into system boundary.
-
+This chapter separated AI work from non-AI work. Next chapter turns chosen work into system boundary: what belongs inside system, what stays outside, and who owns each decision.

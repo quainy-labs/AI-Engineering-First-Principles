@@ -1,5 +1,7 @@
 # Chapter 3: From Messy Workflow to System Boundary
 
+Chapter 2 showed that not every task belongs to AI. This chapter turns that judgment into boundary: which parts belong to code, data, retrieval, model, tools, or humans.
+
 ## Real Problem
 
 Someone says:
@@ -63,6 +65,8 @@ A system boundary defines:
 - what external tools provide.
 
 AI system boundary matters more than model capability. Powerful model inside unclear boundary creates unreliable product.
+
+This boundary will later become software architecture. If boundary is vague, backend services, data stores, model calls, tool permissions, and observability will all be vague too.
 
 ## System Decision
 
@@ -189,5 +193,4 @@ Include:
 
 ## Next
 
-Next chapter defines baseline and impact. Without measurement, system is only story.
-
+This chapter defined what system will and will not do. Next chapter defines how to measure whether that boundary creates real improvement.
