@@ -1,5 +1,6 @@
 .DS_Store
 QUAINY_CONTEXT.md
+AI_ENGINEERING_BOOK_BLUEPRINT.md
 *.log
 .env
 .env.*
