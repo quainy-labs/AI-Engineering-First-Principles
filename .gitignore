@@ -1,4 +1,5 @@
 .DS_Store
+QUAINY_CONTEXT.md
 *.log
 .env
 .env.*
