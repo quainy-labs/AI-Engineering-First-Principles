@@ -30,10 +30,6 @@ After finishing this book, reader should be able to:
 
 Each chapter ends with a proof artifact. No chapter ends with only "understanding."
 
-## Research & Idea
-
-[AI Engineering Blueprint](AI_ENGINEERING_BOOK_BLUEPRINT.md)
-
 ## Projects
 
 [Project Guide](projects/README.md)
