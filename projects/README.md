@@ -1,48 +1,129 @@
 # Projects
 
-These are build projects, not chapter exercises.
+These are guided build projects, not chapter exercises.
 
-Each project is a concrete system that demonstrates how AI engineering concepts become product architecture. Learners should build the system, run it on sample or real data, evaluate behavior, and explain tradeoffs.
+Each project appears after a major course part and should be buildable using only the concepts taught up to that point. Later topics are listed as extensions, not requirements.
+
+The goal is not to complete worksheets. The goal is to build inspectable systems that prove AI engineering judgment.
 
 ## Project Path
 
-1. [Support Workflow Intelligence Console](01-workflow-teardown.md)
-2. [AI App Skeleton](02-ai-app-skeleton.md)
-3. [Knowledge Base Search Engine](03-knowledge-base-search-engine.md)
-4. [Structured Intake Extractor](04-structured-intake-extractor.md)
-5. [Grounded Research Assistant](05-grounded-research-assistant.md)
-6. [Multimodal Document Analyst](06-multimodal-document-analyst.md)
-7. [Operations Action Assistant](07-operations-action-assistant.md)
-8. [Production AI Control Center](08-production-ai-control-center.md)
-9. [AI Risk and Governance Review](09-ai-risk-and-governance-review.md)
+| Part | Chapters | Project | Capability Proved |
+|---|---:|---|---|
+| Part 1 | 1-4 | [Support Workflow Intelligence Console](01-workflow-teardown.md) | Choose meaningful AI work from workflow evidence |
+| Part 2 | 5-8 | [AI App Skeleton](02-ai-app-skeleton.md) | Place AI behavior inside real software architecture |
+| Part 3 | 9-13 | [Knowledge Base Search Engine](03-knowledge-base-search-engine.md) | Build document, metadata, quality, lineage, and search foundations |
+| Part 4 | 14-19 | [Structured Intake Extractor](04-structured-intake-extractor.md) | Use models as bounded components with schema validation and error analysis |
+| Part 5 | 20-25 | [Grounded Research Assistant](05-grounded-research-assistant.md) | Build grounded retrieval and cited answer systems |
+| Part 6 | 26-29 | [Multimodal Document Analyst](06-multimodal-document-analyst.md) | Extract structured records from documents, images, tables, and human correction |
+| Part 7 | 30-36 | [Operations Action Assistant](07-operations-action-assistant.md) | Connect AI to tools, workflow state, approval, and trace review |
+| Part 8 | 37-41 | [Production AI Control Center](08-production-ai-control-center.md) | Operate AI with evals, traces, cost, latency, versions, rollback, and feedback |
+| Part 9 | 42-46 | [AI Risk and Governance Review](09-ai-risk-and-governance-review.md) | Review security, privacy, responsible AI, economics, and launch decision |
 
-## What Makes These Real Projects
+After these, complete the [Capstone](../capstone.md).
 
-Each project includes:
+## Project Standard
+
+Every project should produce one of:
+
+- runnable CLI;
+- reproducible notebook;
+- local API service;
+- local web app;
+- small full-stack prototype;
+- inspectable review package, for Project 9.
+
+Every project should include:
 
 - concrete user;
 - product goal;
-- sample data;
-- system architecture;
+- starter data;
+- MVP milestone;
+- V1 milestone;
+- clear system boundary;
 - core components;
-- UI or CLI behavior;
 - data model;
-- evaluation plan;
-- acceptance tests;
-- extension path.
+- seeded failure cases;
+- evaluation dataset or review evidence;
+- acceptance rubric;
+- final deliverables;
+- demo script.
 
-## Rule
+## Scope Rule
 
-Do not stop at documents.
+Projects must not depend on future parts.
 
-Every project should produce a runnable or inspectable system:
+Examples:
 
-- CLI;
-- local web app;
-- API service;
-- notebook with reproducible pipeline;
-- or small full-stack prototype.
+- Project 1 should not require app architecture, models, retrieval, or production observability.
+- Project 3 should not require embeddings or RAG.
+- Project 5 may require RAG, but should not require tools or agents.
+- Project 8 should not require security/governance review.
+- Project 9 may combine the full Part 9 security, governance, and economics surface.
 
-The capstone remains learner-chosen. These nine projects are guided builds that show system patterns before capstone.
+Later capabilities can improve earlier projects, but they should appear as extensions.
 
-Capstone standard: build one narrow real system with baseline, architecture, evals, error analysis, risk review, observability, operating model, deployment plan, and demo.
+## How To Use These Projects
+
+For each project:
+
+1. Read the project spec.
+2. Build the MVP first.
+3. Add V1 only after MVP works.
+4. Include seeded failure cases.
+5. Run the evaluation or review.
+6. Produce final deliverables.
+7. Record a short demo.
+8. Explain one important tradeoff.
+
+Do not start by choosing a model.
+
+Start by understanding the workflow, boundary, data, output contract, risk, and evaluation.
+
+## Portfolio Evidence
+
+A strong learner portfolio should show:
+
+- what problem the project solves;
+- what input data was used;
+- how the system is structured;
+- where AI is used and where it is not used;
+- how bad outputs are caught;
+- how failure cases are evaluated;
+- what tradeoffs were made;
+- what would be improved next.
+
+The best project demos show both:
+
+- a happy path;
+- a failure path handled safely.
+
+## Capstone Bridge
+
+The capstone is learner-chosen.
+
+Use the guided projects as building blocks:
+
+- Project 1 helps choose the workflow.
+- Project 2 provides the software skeleton.
+- Project 3 provides knowledge foundations.
+- Project 4 provides model interface and validation.
+- Project 5 provides grounded retrieval.
+- Project 6 provides multimodal extraction.
+- Project 7 provides tools, approvals, and agent traces.
+- Project 8 provides production readiness.
+- Project 9 provides risk, governance, and economics review.
+
+Capstone standard:
+
+```text
+one narrow real workflow
+  -> baseline
+  -> architecture
+  -> data and model/retrieval/tool design
+  -> runnable prototype
+  -> evals and error analysis
+  -> traces and deployment plan
+  -> security/risk/economics review
+  -> demo and proof of capability
+```

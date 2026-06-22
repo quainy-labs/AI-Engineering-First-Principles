@@ -6,33 +6,48 @@
 
 ## Reader Promise
 
-After finishing this book, reader should be able to:
+After finishing this course, a learner should be able to:
 
 - analyze a real workflow;
 - decide when not to use AI;
 - design system boundaries;
+- build AI-ready software foundations;
 - organize data, documents, and state;
-- use models as components;
+- use models as bounded components;
 - build grounded retrieval systems;
-- connect AI to tools and workflows;
-- evaluate quality with real examples;
-- reason about cost, latency, security, and risk;
-- ship proof of useful capability.
+- work with multimodal documents and human correction;
+- connect AI to tools, workflows, approvals, and agents;
+- evaluate quality, cost, latency, traces, and failure modes;
+- deploy, roll back, and improve AI systems responsibly;
+- reason about security, privacy, governance, and economics;
+- ship proof of useful capability through portfolio-grade projects.
 
 ## Book Shape
 
-- Core structure updated.
-- Parts 1-9 are ordered from first principles.
-- Remaining work is polish: cross-links, examples, diagrams, and copy tightening.
-- Target: full AI engineering path from problem to software, data, models, retrieval, multimodal interfaces, tools, agents, production, security, governance, product economics, and capstone.
-- Serious build projects after each major capability.
-- 1 capstone.
+- 46 chapters across 9 ordered parts.
+- 9 guided build projects, one after each major capability.
+- 1 capstone that proves end-to-end AI engineering capability.
+- Chapters teach the mental model, mechanics, examples, mistakes, design decisions, build artifact, recall questions, summary, and next-step preview.
+- Projects are build-ready specifications, not exercises. Each project is scoped only to concepts already taught.
+- The capstone asks the learner to choose one meaningful workflow, build a narrow system, evaluate it, review risk, and make a product-real launch decision.
 
 Each chapter ends with a proof artifact. No chapter ends with only "understanding."
 
 ## Projects
 
-[Project Guide](projects/README.md)
+The guided projects are the portfolio path through the course:
+
+1. Problem-first workflow analysis.
+2. AI-ready app skeleton.
+3. Knowledge base search engine.
+4. Structured model extraction.
+5. Grounded RAG assistant.
+6. Multimodal document analyst.
+7. Tool and agent workflow assistant.
+8. Production AI control center.
+9. Risk, governance, and economics review.
+
+Start here: [Project Guide](projects/README.md)
 
 ## License & Contributions
 
@@ -152,8 +167,9 @@ Capability: make AI systems safe, governed, economically justified, and worth ke
 
 Project: [AI Risk and Governance Review](projects/09-ai-risk-and-governance-review.md)
 
-## Capstone
+
+## Final Capstone
+
+Final proof: choose one real workflow, build one narrow intelligent system, evaluate it, analyze failure, document risk, estimate economics, and show deployment readiness.
 
 [Build One Real Intelligent System](capstone.md)
-
-Final proof: choose one real workflow, build a narrow intelligent system, evaluate it, analyze failure, document risk, and show deployment readiness.
