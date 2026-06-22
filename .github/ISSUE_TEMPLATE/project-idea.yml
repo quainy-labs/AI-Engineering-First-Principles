@@ -1,0 +1,58 @@
+name: Project idea
+description: Propose a new guided project or improvement to an existing project.
+title: "[Project]: "
+labels:
+  - project
+body:
+  - type: input
+    id: related-part
+    attributes:
+      label: Related part or chapter
+      placeholder: "Part 6: Multimodal and Human Interfaces"
+    validations:
+      required: true
+
+  - type: textarea
+    id: project
+    attributes:
+      label: Project idea
+      description: Describe the project in one or two paragraphs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: user
+    attributes:
+      label: User and workflow
+      description: Who uses it, and what real work does it improve?
+      placeholder: "User: operations teammate. Workflow: ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: build
+    attributes:
+      label: What would learners build?
+      description: Include UI/CLI/API, data model, evaluation, and acceptance criteria if possible.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evaluation
+    attributes:
+      label: Evaluation plan
+      description: How should the project prove it works?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: guardrails
+    attributes:
+      label: Project standards
+      options:
+        - label: This is a real system project, not just an exercise.
+          required: true
+        - label: The project includes evaluation or measurable acceptance criteria.
+          required: true
+        - label: The project does not require private/proprietary data.
+          required: true

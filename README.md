@@ -34,6 +34,13 @@ Each chapter ends with a proof artifact. No chapter ends with only "understandin
 
 [Project Guide](projects/README.md)
 
+## License & Contributions
+
+- License: [Apache License 2.0](LICENSE)
+- Contributions: [Contributing Guide](CONTRIBUTING.md)
+
+The project is open source under Apache-2.0. Quainy names, logos, and brand assets are not licensed for reuse except for reasonable attribution as described in the contributing guide and notice.
+
 ## Table of Contents
 
 ### Part 1: Problem-First AI Engineering

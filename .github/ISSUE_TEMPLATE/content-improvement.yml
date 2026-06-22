@@ -1,0 +1,57 @@
+name: Content improvement
+description: Suggest a clearer explanation, better ordering, missing topic, or stronger chapter structure.
+title: "[Content]: "
+labels:
+  - content
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for improvements to chapters, ordering, examples, or explanations.
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: Which chapter, project, or file does this affect?
+      placeholder: "part-4-models-as-components/17-model-selection-routing-and-fallbacks.md"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is unclear, missing, inaccurate, or out of order?
+      description: Be specific about the learning issue.
+      placeholder: "The chapter introduces X before Y, but learners need Y first because..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Suggested improvement
+      description: What should change?
+      placeholder: "Move this concept after..., add a failure mode..., clarify..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reader-benefit
+    attributes:
+      label: Reader benefit
+      description: How does this help someone build better AI systems?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: guardrails
+    attributes:
+      label: Contribution guardrails
+      options:
+        - label: This suggestion avoids tool hype and is grounded in durable AI engineering.
+          required: true
+        - label: This suggestion does not include private company data, secrets, or proprietary material.
+          required: true
+        - label: This suggestion does not misuse Quainy branding or imply endorsement.
+          required: true

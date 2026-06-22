@@ -1,0 +1,51 @@
+name: Correction
+description: Report a factual error, broken link, typo, numbering issue, or stale reference.
+title: "[Correction]: "
+labels:
+  - correction
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: File, chapter, section, or link.
+      placeholder: "README.md, Part 6 table of contents"
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is wrong?
+      description: Describe the exact issue.
+      placeholder: "The README links to an old folder name..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected fix
+      description: What should it say or link to instead?
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: type
+    attributes:
+      label: Type
+      options:
+        - label: Typo or grammar
+        - label: Broken link
+        - label: Wrong chapter/project number
+        - label: Technical inaccuracy
+        - label: Stale reference
+        - label: Formatting issue
+
+  - type: checkboxes
+    id: guardrails
+    attributes:
+      label: Safety check
+      options:
+        - label: This report does not include secrets, customer data, or private company material.
+          required: true
