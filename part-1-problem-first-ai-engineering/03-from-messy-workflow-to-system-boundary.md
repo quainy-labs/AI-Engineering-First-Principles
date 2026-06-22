@@ -1,84 +1,192 @@
 # Chapter 3: From Messy Workflow to System Boundary
 
-Chapter 2 showed that not every task belongs to AI. This chapter turns that judgment into boundary: which parts belong to code, data, retrieval, model, tools, or humans.
+Chapter 1 said AI engineering is system design.
 
-## Real Problem
+Chapter 2 separated work that belongs to AI from work that belongs to code, data, retrieval, or humans.
 
-Someone says:
+This chapter turns that separation into a boundary.
 
-> Our team spends too much time reviewing compliance documents.
+> A system boundary defines what the system accepts, what it produces, what it controls, what it refuses, and who owns each decision.
 
-This is not yet system requirement. It is pain.
+Without boundary, "AI assistant" becomes a vague promise.
 
-To build useful AI system, convert pain into workflow:
+With boundary, it becomes an engineered system.
 
-- who starts work;
-- what input arrives;
-- what steps happen;
-- what decisions happen;
-- what tools are used;
-- what output gets delivered;
-- what errors matter;
-- what should remain human-owned.
+## Concept Overview
 
-System boundary decides what belongs inside product and what stays outside.
+A messy workflow is how work happens in real life.
 
-## Bad Default Solution
+It includes:
 
-Bad solution:
+- unclear inputs;
+- human judgment;
+- copy-paste steps;
+- searching;
+- checking;
+- exceptions;
+- approvals;
+- undocumented habits.
 
-- upload documents to model;
-- ask for compliance issues;
-- show generated summary.
-
-Maybe useful demo. Not enough system.
-
-Missing:
-
-- document types;
-- policy source;
-- risk categories;
-- reviewer responsibility;
-- citation requirements;
-- approval flow;
-- audit trail;
-- escalation path;
-- measurement.
-
-Without boundary, every edge case becomes surprise.
-
-## First Principles
-
-A workflow is repeated transformation:
+A system boundary turns that mess into an explicit design:
 
 ```text
-input -> steps -> decisions -> output
+inside system:
+- accepted inputs
+- system steps
+- AI tasks
+- code tasks
+- data sources
+- output contract
+
+outside system:
+- tasks system refuses
+- decisions humans keep
+- external systems only referenced
+- unsupported edge cases
 ```
 
-A system boundary defines:
+The goal is not to automate everything.
 
-- what system accepts;
-- what system produces;
-- what system controls;
-- what system refuses;
-- what humans decide;
-- what external tools provide.
+The goal is to define a reliable slice of work that can be built, evaluated, and improved.
 
-AI system boundary matters more than model capability. Powerful model inside unclear boundary creates unreliable product.
+## Why It Exists
 
-This boundary will later become software architecture. If boundary is vague, backend services, data stores, model calls, tool permissions, and observability will all be vague too.
+Teams often begin with pain:
 
-## System Decision
+```text
+Our team spends too much time reviewing compliance documents.
+```
 
-Map workflow in five layers:
+That is useful, but it is not yet a system requirement.
 
-1. Trigger: what starts work?
-2. Input: what information arrives?
-3. Transformation: what changes?
-4. Decision: what must be judged?
-5. Output: what leaves system?
+Pain does not tell you:
 
-Then mark ownership:
+- which documents;
+- which user;
+- which policy source;
+- which risk categories;
+- what output should be produced;
+- who approves final decision;
+- what should happen when evidence is missing;
+- what system must refuse.
+
+Without boundary, teams build demos:
+
+```text
+upload document -> ask model for issues -> show summary
+```
+
+The demo may look good.
+
+Then real work arrives:
+
+- scanned PDFs;
+- missing pages;
+- outdated policy;
+- ambiguous clause;
+- high-risk legal decision;
+- user asks for final approval;
+- citation is required;
+- audit trail is needed.
+
+Every edge case becomes surprise because the system never defined what it owns.
+
+System boundary exists to prevent surprise.
+
+## Mental Model
+
+Start with workflow:
+
+```text
+trigger -> input -> steps -> decisions -> output
+```
+
+Then draw boundary:
+
+```text
+                 outside system
+        --------------------------------
+        policy owner, legal approval,
+        unsupported document types,
+        final high-risk decision
+
+user -> input -> [ system boundary ] -> output -> human/user
+                 accepted docs
+                 extraction
+                 retrieval
+                 model analysis
+                 validation
+                 review flag
+                 audit record
+```
+
+Inside the boundary, the system must be designed and evaluated.
+
+Outside the boundary, the system must hand off, refuse, or escalate.
+
+Boundary answers:
+
+```text
+What do we accept?
+What do we produce?
+What do we decide?
+What do we not decide?
+What do we need from outside?
+Who owns final accountability?
+```
+
+## Internal Mechanics
+
+To convert workflow into boundary, inspect five layers.
+
+### 1. Trigger
+
+Trigger starts the work.
+
+Examples:
+
+- user uploads document;
+- ticket arrives;
+- customer sends email;
+- scheduled job runs;
+- employee asks question.
+
+If trigger is vague, system entry point is vague.
+
+### 2. Input
+
+Input is what system receives.
+
+Define:
+
+- format;
+- source;
+- required fields;
+- optional fields;
+- quality limits;
+- unsupported inputs.
+
+Example:
+
+```text
+Accepted: vendor contract PDF under 30 pages
+Unsupported: handwritten notes, images without readable text, legal filings
+```
+
+### 3. Transformation
+
+Transformation is what changes inside the system.
+
+Examples:
+
+- extract fields;
+- classify type;
+- retrieve policy;
+- identify risky clause;
+- draft summary;
+- validate output.
+
+Each transformation needs owner:
 
 - code;
 - retrieval;
@@ -86,111 +194,337 @@ Then mark ownership:
 - human;
 - external service.
 
-Example:
+### 4. Decision
 
-| Step | Owner | Notes |
-|---|---|---|
-| Upload contract | User | Input |
-| Detect contract type | Model | Classification with confidence |
-| Retrieve policy | Code + search | Must use approved source |
-| Identify risky clauses | Model + retrieval | Must cite clause and policy |
-| Approve final risk rating | Human | Human owns decision |
-| Store review record | Code | Audit trail |
+Decision is where something is judged.
 
-## Minimal Build
+Examples:
 
-Create workflow map:
+- is document in scope?
+- is clause risky?
+- is evidence enough?
+- should this be escalated?
+- can output be trusted?
+
+Some decisions can be code. Some can be model-assisted. Some must be human.
+
+### 5. Output
+
+Output is what leaves the system.
+
+Examples:
+
+- structured record;
+- draft reply;
+- cited answer;
+- risk report;
+- task proposal;
+- refusal message.
+
+Output needs contract:
 
 ```text
-Trigger:
-User:
-Input:
-Output:
-Step 1:
-Step 2:
-Step 3:
-Decision points:
-Human approval points:
-Data sources:
-External tools:
-Out of scope:
-Failure modes:
+format:
+required fields:
+citations:
+confidence/review flag:
+owner:
 ```
 
-Out of scope is critical. It prevents system from pretending to solve everything.
+If output is vague, evaluation becomes vague.
 
-## Failure Modes
+## Real-World Example
 
-Workflow design fails when:
+A compliance team says:
 
-- input types are unknown;
-- output has no owner;
-- model makes hidden decision;
-- human approval added only after failure;
-- system accepts tasks it cannot verify;
-- out-of-scope cases are not rejected;
-- logs do not capture decision path.
+```text
+We spend too much time reviewing vendor contracts.
+```
 
-## Evaluation
+Messy workflow today:
 
-Test boundary with 10 real examples:
+1. Vendor sends contract PDF.
+2. Operations teammate uploads it to shared folder.
+3. Reviewer searches policy doc.
+4. Reviewer scans contract for risky clauses.
+5. Reviewer writes summary.
+6. Legal reviews high-risk cases.
+7. Decision is stored in spreadsheet.
 
-- 6 normal cases;
-- 2 edge cases;
-- 2 out-of-scope cases.
+Bad AI request:
 
-Pass if system behavior is clear for all 10 before implementation.
+```text
+Build an AI contract reviewer.
+```
 
-Fail if team says:
+Better boundary:
 
-> model will handle it.
+```text
+System accepts:
+- vendor contract PDFs under 30 pages
+- text-based PDF or OCR-readable scan
 
-That phrase often hides missing design.
+System does:
+- detect contract type
+- extract parties, dates, renewal terms
+- retrieve approved policy
+- identify possible risky clauses
+- cite contract clause and policy source
+- produce review draft
 
-## Improvement
+System does not:
+- give legal approval
+- negotiate contract
+- approve vendor
+- review non-contract documents
+- decide high-risk cases automatically
 
-If boundary is unclear:
+Human owns:
+- final risk rating
+- legal approval
+- exception handling
+```
 
-- narrow input type;
-- reduce output promise;
-- add human review;
-- make citations required;
-- add confidence threshold;
-- refuse unsupported cases;
-- log every decision.
+Now the system is buildable.
+
+You can test whether it accepts the right inputs, produces useful output, cites sources, and escalates risky cases.
+
+## Common Mistakes and Failure Modes
+
+### Mistake 1: Boundary Is Just "Chat With Documents"
+
+Chat is interface, not boundary.
+
+Boundary must define accepted input, output, ownership, refusal, and handoff.
+
+### Mistake 2: System Accepts Everything
+
+If system accepts every document, every question, and every workflow, it cannot be reliable.
+
+Start narrow.
+
+### Mistake 3: Human Approval Is Added Too Late
+
+Approval should be designed before failure.
+
+If legal, financial, access, or customer-impacting decisions exist, define approval points early.
+
+### Mistake 4: Output Has No Contract
+
+Bad:
+
+```text
+Give useful summary.
+```
+
+Better:
+
+```text
+Return risk_summary, cited_clauses, policy_sources, missing_information, needs_legal_review.
+```
+
+### Mistake 5: Hidden Model Decisions
+
+If model decides something important, name it.
+
+Do not hide decisions inside "analysis."
+
+### Mistake 6: No Out-of-Scope List
+
+Out of scope protects trust.
+
+It tells system when to refuse or escalate instead of pretending.
+
+## System Design Decisions
+
+For a workflow, decide:
+
+```text
+What starts the workflow?
+Who is the user?
+What input is accepted?
+What input is rejected?
+What output is promised?
+What output is not promised?
+Which steps belong to code?
+Which steps belong to retrieval?
+Which steps belong to model?
+Which decisions belong to human?
+What external systems are required?
+What failure modes matter?
+What gets logged?
+```
+
+Ownership table:
+
+| Step | Owner | Reason |
+|---|---|---|
+| Upload contract | user/system | input |
+| Detect document type | model + validation | messy but checkable |
+| Extract dates/parties | model + schema | language/layout extraction |
+| Retrieve policy | code + search | trusted source |
+| Identify possible risky clauses | model + retrieval | language judgment with evidence |
+| Final legal risk rating | human | accountability |
+| Store review record | code | audit trail |
+
+The best boundary usually makes the first version smaller than the original ambition.
 
 Smaller reliable system beats broad vague assistant.
 
-## Proof Artifact
+## Build Artifact
 
 Create `workflow-boundary.md`.
 
-Include:
+Template:
 
-- workflow map;
-- ownership table;
-- out-of-scope list;
-- approval points;
-- 10-example boundary test.
+```text
+Workflow:
+Primary user:
 
-## Decision Checklist
+Trigger:
+Accepted inputs:
+Rejected inputs:
 
-- [ ] Workflow trigger is clear.
-- [ ] Inputs are known.
-- [ ] Outputs are known.
-- [ ] Each step has owner.
-- [ ] Human approval points are explicit.
-- [ ] Out-of-scope cases are defined.
-- [ ] Boundary tested with real examples.
+Output:
+Output contract:
 
-## Active Recall
+Steps:
+- step:
+  owner: code | retrieval | model | human | external service
+  reason:
+
+Human approval points:
+External systems:
+Data sources:
+Out of scope:
+Failure modes:
+Logs/audit trail:
+
+Boundary test cases:
+- normal:
+- edge:
+- out of scope:
+```
+
+Worked example:
+
+```text
+Workflow: vendor contract review draft
+Primary user: compliance reviewer
+
+Trigger: vendor contract uploaded
+Accepted inputs: vendor contract PDF under 30 pages
+Rejected inputs: handwritten scans, non-contract documents, missing pages
+
+Output: review draft
+Output contract:
+- contract_type
+- extracted_terms
+- risky_clauses
+- cited_policy_sources
+- missing_information
+- needs_legal_review
+
+Steps:
+- step: classify document type
+  owner: model + validation
+  reason: language/layout variation
+
+- step: retrieve policy
+  owner: code + search
+  reason: must use approved source
+
+- step: identify risky clauses
+  owner: model + retrieval
+  reason: language judgment, must cite evidence
+
+- step: final risk approval
+  owner: human
+  reason: legal accountability
+
+Human approval points:
+- any high-risk clause
+- missing policy evidence
+- contract value above threshold
+
+External systems:
+- document store
+- policy search index
+- review database
+
+Out of scope:
+- final legal approval
+- vendor negotiation
+- non-contract document review
+
+Failure modes:
+- wrong policy source
+- missing clause
+- unsupported claim
+- out-of-scope document accepted
+
+Logs/audit trail:
+- uploaded document id
+- policy sources used
+- model output version
+- reviewer decision
+
+Boundary test cases:
+- normal: standard vendor contract
+- edge: contract missing renewal section
+- out of scope: handwritten amendment photo
+```
+
+Acceptance criteria:
+
+- trigger is clear;
+- accepted and rejected inputs are clear;
+- output contract exists;
+- every step has owner;
+- human approval points are explicit;
+- out-of-scope cases are named;
+- boundary is tested with real examples.
+
+## Active Recall Questions
 
 1. What is system boundary?
 2. Why does workflow come before model?
-3. What does out-of-scope protect against?
-4. Why should each step have owner?
-5. Why test boundary before implementation?
+3. What does out of scope protect against?
+4. Why should every workflow step have owner?
+5. What is difference between workflow and system boundary?
+6. Why should output have contract?
+7. Why test boundary before implementation?
 
-## Next
+## Summary
 
-This chapter defined what system will and will not do. Next chapter defines how to measure whether that boundary creates real improvement.
+A messy workflow is not yet a system.
+
+The durable idea:
+
+```text
+workflow shows how work happens
+boundary defines what system owns
+```
+
+System boundary makes AI engineering concrete:
+
+- accepted input;
+- promised output;
+- step ownership;
+- human approval;
+- external systems;
+- refusal behavior;
+- failure modes;
+- audit trail.
+
+Without boundary, a powerful model becomes unreliable product.
+
+With boundary, the system can be built, evaluated, and improved.
+
+## Preview of Next Chapter
+
+This chapter defined what the system will and will not do.
+
+Next chapter asks:
+
+> How do we measure whether that boundary creates meaningful improvement?

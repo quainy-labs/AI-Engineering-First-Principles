@@ -1,247 +1,567 @@
 # Chapter 1: AI Engineering Is System Design
 
-## Real Problem
-
-A founder says:
-
-> We need an AI assistant for our company knowledge base.
-
-This sounds clear. It is not.
-
-What does "assistant" mean?
-
-- Answer employee questions?
-- Search documents?
-- Summarize long PDFs?
-- Draft customer replies?
-- Trigger actions in internal tools?
-- Reduce support load?
-- Help new employees onboard?
-- Replace a manual workflow?
-
-Same phrase, many systems. If builder starts with model choice, they have already skipped engineering.
-
-AI engineering begins before model selection. It begins with system design.
-
-This chapter starts the book's full path:
+Most people begin AI engineering with this question:
 
 ```text
-problem -> software -> data -> models -> retrieval -> interfaces -> action -> production -> governance
+Which model should we use?
 ```
 
-You begin with problem because every later engineering choice depends on what work should improve. Software architecture, data pipelines, model selection, retrieval, tools, evals, and security are all downstream of this first decision.
+That is usually the wrong first question.
 
-## Bad Default Solution
+AI engineering begins with:
 
-Common path:
+```text
+What work should improve, for whom, and how will we know?
+```
 
-1. Pick latest model.
-2. Connect documents.
-3. Add chat UI.
-4. Call it internal copilot.
-5. Demo works on three examples.
-6. Real users ask messy questions.
-7. Answers are incomplete, stale, uncited, or unsafe.
-8. Nobody trusts it.
+This chapter sets the foundation for the whole book. Before models, prompts, RAG, agents, evals, or production, you need one durable idea:
 
-Failure was not "bad prompting." Failure was weak system design.
+> AI engineering is system design around uncertain components.
 
-No clear user. No baseline. No data ownership. No retrieval evaluation. No permissions. No failure handling. No feedback loop. No definition of success.
+## Concept Overview
 
-## First Principles
+AI engineering is the practice of designing reliable systems that use AI components to improve real work.
 
-An intelligent system is still a system.
+An AI system is not just:
 
-It has:
+- a model;
+- a prompt;
+- a chatbot;
+- a vector database;
+- an agent;
+- an API call.
 
-- users;
-- goals;
+An AI system includes:
+
+- user;
+- workflow;
 - inputs;
 - outputs;
-- state;
-- information sources;
-- decisions;
-- actions;
-- constraints;
-- failure modes;
+- data sources;
+- deterministic code;
+- model calls;
+- retrieval;
+- tools;
+- human review;
+- evaluation;
+- observability;
+- security;
 - feedback loops.
 
-AI adds probabilistic behavior. It does not remove engineering responsibility.
+The model is one component. Sometimes it is the most visible component, but it is rarely the whole system.
 
-Traditional software is mostly deterministic:
-
-> same input + same code -> same output
-
-AI systems often include probabilistic components:
-
-> similar input + same model -> possibly different output
-
-This changes engineering:
-
-- outputs need validation;
-- quality needs evaluation sets;
-- logs need more context;
-- users need trust signals;
-- risky actions need approval;
-- system needs fallback behavior.
-
-AI engineering is the discipline of deciding which parts should be deterministic, which parts should use learned models, which parts need retrieval, and which parts require human judgment.
-
-That means AI engineering is not one skill. It is a chain of decisions:
-
-- problem decision: should this be built?
-- software decision: what system shape supports it?
-- data decision: what information does it need?
-- model decision: where does learned behavior help?
-- retrieval decision: what knowledge must be grounded?
-- interface decision: how do users and models communicate?
-- action decision: what tools can system safely use?
-- production decision: how is quality measured and maintained?
-- governance decision: what risks, permissions, and responsibilities exist?
-
-## System Decision
-
-Before building, ask:
-
-1. What work should improve?
-2. Who does that work today?
-3. What input do they start with?
-4. What output do they need?
-5. What makes output good?
-6. Where does required information live?
-7. What can be solved with normal software?
-8. Where does language understanding or generation help?
-9. What failure would be expensive, unsafe, or embarrassing?
-10. How will we measure improvement?
-
-If these are unanswered, do not build agent. Build understanding.
-
-## Minimal Build
-
-Create one-page system brief:
+This book follows that idea:
 
 ```text
-System name:
-User:
-Current workflow:
-Pain:
-Baseline:
-Input:
-Output:
-Information sources:
-AI role:
-Non-AI role:
-Human role:
-Success metric:
-Failure modes:
-Proof artifact:
+problem
+-> software
+-> data
+-> models
+-> retrieval
+-> multimodal interfaces
+-> tools and agents
+-> production
+-> security and product reality
+-> capstone
 ```
+
+If the first step is vague, every later step becomes expensive guessing.
+
+## Why It Exists
+
+AI engineering exists because modern models are powerful but not automatically useful.
+
+A model can:
+
+- understand messy language;
+- summarize;
+- classify;
+- extract;
+- draft;
+- reason over provided context;
+- propose tool calls.
+
+But real work also needs:
+
+- permissions;
+- source of truth;
+- state;
+- business rules;
+- validation;
+- approvals;
+- logs;
+- cost limits;
+- latency limits;
+- risk controls;
+- user trust.
+
+These are system concerns.
 
 Example:
 
 ```text
-System name: Support Reply Assistant
-User: Customer support teammate
-Current workflow: Read ticket, search docs, draft reply, ask senior teammate if unsure
-Pain: Slow replies for repeated questions
-Baseline: Median first draft time = 12 minutes
-Input: Customer ticket + product docs
-Output: Draft reply with citations
-Information sources: Help center, changelog, policy docs
-AI role: Retrieve relevant docs, draft response
-Non-AI role: Ticket routing, citation validation, template formatting
-Human role: Approve before sending
-Success metric: Draft time < 5 minutes, citation accuracy > 90%
-Failure modes: Wrong policy, missing context, confident hallucination
-Proof artifact: 20-ticket eval report
+Build an AI assistant for company knowledge.
 ```
 
-This is not glamorous. It prevents waste.
+This sounds like a requirement. It is not.
 
-## Failure Modes
+It could mean:
 
-AI engineering fails early when:
+- search documents;
+- answer employee questions;
+- summarize PDFs;
+- onboard new hires;
+- draft support replies;
+- cite policy sources;
+- route questions to owners;
+- trigger internal workflows.
 
-- problem is vague;
-- user is undefined;
-- workflow is unknown;
-- baseline is missing;
-- success metric is subjective;
-- system has no trusted data source;
-- model is asked to do what deterministic code should do;
-- assistant can take risky action without approval;
-- demo examples replace evaluation.
+Same phrase. Many possible systems.
 
-## Evaluation
+If you start by choosing a model, you skip the real design work:
 
-For Chapter 1, evaluate only system clarity.
+```text
+Who is the user?
+What work is broken?
+What information is trusted?
+What should AI do?
+What should AI not do?
+What proof will show improvement?
+```
 
-Pass if system brief answers:
+AI engineering exists to answer those questions before building.
 
-- who uses it;
-- what work improves;
-- what baseline exists;
-- what output matters;
-- what AI should and should not do;
-- what failure looks like;
-- what proof will show impact.
+## Mental Model
 
-Fail if brief says only:
+Think of an AI system as a workflow with several owners:
 
-- "build chatbot";
-- "use AI to automate";
-- "make workflow faster";
-- "improve productivity."
+```text
+real user
+-> real workflow
+-> input
+-> system boundary
+-> deterministic code
+-> data/retrieval
+-> model component
+-> validation
+-> human review when needed
+-> output/action
+-> evaluation and feedback
+```
 
-These are hopes, not engineering requirements.
+Each part has a job.
 
-## Improvement
+| Part | Job |
+|---|---|
+| User | has work to complete |
+| Workflow | shows how work happens today |
+| Input | what system receives |
+| Deterministic code | handles rules, routing, validation, storage |
+| Data/retrieval | provides trusted facts |
+| Model | handles language, ambiguity, transformation, drafting |
+| Human | owns judgment, approval, accountability |
+| Evaluation | proves whether system improved work |
+| Feedback | turns failures into improvements |
 
-If brief is vague, improve it by interviewing user or observing workflow.
+The core design question:
 
-Ask:
+```text
+Which part should own which decision?
+```
 
-- Show me last 5 real examples.
-- What made them hard?
-- Where did you search?
-- What did you copy?
-- What did you decide?
-- What did you check before sending?
-- What mistakes matter?
+Bad AI systems give too many decisions to the model.
 
-Real examples beat imagined requirements.
+Good AI systems split responsibility:
 
-## Proof Artifact
+```text
+code handles rules
+data stores truth
+retrieval provides evidence
+model handles messy language
+human approves risky decisions
+eval measures quality
+```
 
-Create `system-brief.md` for one real workflow.
+## Internal Mechanics
 
-Include:
+An AI system behaves differently from traditional deterministic software.
 
-- current workflow;
-- baseline;
-- proposed AI role;
-- proposed non-AI role;
-- failure modes;
+Traditional software often works like:
+
+```text
+same input + same code -> same output
+```
+
+AI components may behave like:
+
+```text
+similar input + same model -> possibly different output
+```
+
+This changes engineering.
+
+### Inputs Need Shape
+
+Models are sensitive to input quality.
+
+Messy input should be normalized:
+
+- clean text;
+- structured fields;
+- document metadata;
+- user role;
+- source labels;
+- task instruction.
+
+### Outputs Need Contracts
+
+Do not accept vague output if the workflow needs structure.
+
+Bad:
+
+```text
+This looks urgent.
+```
+
+Better:
+
+```json
+{
+  "urgency": "high",
+  "reason": "customer says finance closes books today",
+  "needs_human_review": true
+}
+```
+
+### Facts Need Sources
+
+Model memory is not source of truth.
+
+Trusted facts should come from:
+
+- database;
+- approved documents;
+- API;
+- user-provided context;
+- verified records.
+
+### Risk Needs Control
+
+If output can affect money, permissions, customer messages, legal claims, or safety, the system needs stronger controls:
+
+- validation;
+- refusal;
+- approval;
+- audit log;
+- fallback.
+
+### Quality Needs Evaluation
+
+You cannot judge an AI system by one good demo.
+
+You need examples:
+
+- normal cases;
+- edge cases;
+- missing-information cases;
+- should-refuse cases;
+- past failures.
+
+This is why AI engineering is system design: uncertainty must be surrounded by structure.
+
+## Real-World Example
+
+A founder says:
+
+```text
+We need an AI assistant for support.
+```
+
+A weak builder hears:
+
+```text
+chatbot + latest model + docs
+```
+
+A strong AI engineer asks:
+
+```text
+Which support workflow?
+Who uses it?
+What happens today?
+What is slow or broken?
+What should the assistant produce?
+What should it never do?
+What proof will show value?
+```
+
+After observing support work, the actual workflow becomes clear:
+
+```text
+1. Support teammate reads ticket.
+2. They search docs for policy.
+3. They check account plan.
+4. They draft a reply.
+5. They ask senior teammate for risky cases.
+6. They send final response.
+```
+
+Now the system can be designed:
+
+```text
+AI role:
+- summarize ticket
+- retrieve relevant docs
+- draft reply with citations
+
+Code role:
+- fetch ticket
+- check account plan
+- validate citations
+- save draft
+
+Human role:
+- approve final reply
+- handle refund/policy exceptions
+
+Not allowed:
+- send final reply automatically
+- approve refund
+- invent policy
+```
+
+This is much clearer than:
+
+```text
+Build support chatbot.
+```
+
+The better requirement is:
+
+```text
+Build a support reply drafting system that reduces first-draft time from 12 minutes to under 5 minutes while keeping citation accuracy above 90%.
+```
+
+Now engineering can begin.
+
+## Common Mistakes and Failure Modes
+
+### Mistake 1: Starting With Model Selection
+
+If you choose model before workflow, you optimize the wrong thing.
+
+Model choice depends on:
+
+- task;
+- input size;
+- output contract;
+- latency;
+- cost;
+- privacy;
+- risk.
+
+### Mistake 2: Saying "Assistant" Instead of Naming the Job
+
+Assistant is a broad interface word.
+
+It does not define:
+
+- user;
+- workflow;
+- output;
+- source of truth;
+- risk;
 - success metric.
 
-## Decision Checklist
+### Mistake 3: No Baseline
 
-- [ ] I can name real user.
-- [ ] I can describe current workflow.
-- [ ] I know baseline.
-- [ ] I know what output must improve.
-- [ ] I know what model should not do.
-- [ ] I know how system can fail.
-- [ ] I know what proof artifact will show impact.
+Without baseline, improvement is a story.
 
-## Active Recall
+Baseline examples:
+
+- current time per task;
+- error rate;
+- review time;
+- support volume;
+- missed SLA rate;
+- manual search time.
+
+### Mistake 4: Asking AI To Own Business Decisions
+
+Models can draft, classify, extract, and propose.
+
+They should not secretly own:
+
+- refund approval;
+- permission changes;
+- compliance decisions;
+- final customer communication;
+- source-of-truth updates.
+
+### Mistake 5: Treating Demo as Evaluation
+
+Three good examples do not prove system quality.
+
+Real users will bring:
+
+- ambiguous requests;
+- missing context;
+- stale documents;
+- adversarial text;
+- edge cases;
+- policy exceptions.
+
+### Mistake 6: No Human Role
+
+Even automated systems need accountability.
+
+Someone owns:
+
+- approval;
+- correction;
+- escalation;
+- risk acceptance;
+- feedback review.
+
+## System Design Decisions
+
+Before building any AI system, decide:
+
+```text
+What work should improve?
+Who does that work today?
+What input starts the workflow?
+What output ends the workflow?
+What makes output good?
+What is the current baseline?
+Where does trusted information live?
+What should deterministic code own?
+What should model own?
+What should human own?
+What failures are unacceptable?
+How will quality be evaluated?
+```
+
+This is the first Quainy-aligned engineering move:
+
+> Turn vague ambition into a bounded system.
+
+Decision split:
+
+| Decision | Better Owner |
+|---|---|
+| exact account status | database/API |
+| policy source | approved documents/retrieval |
+| language summary | model |
+| structured extraction | model + validator |
+| permission check | code |
+| risky approval | human |
+| final audit record | system log |
+
+If you cannot fill this table, you are not ready to build.
+
+## Build Artifact
+
+Create `system-brief.md`.
+
+Template:
+
+```text
+System name:
+Primary user:
+Current workflow:
+Pain:
+Baseline:
+
+Input:
+Output:
+Trusted information sources:
+
+AI role:
+Non-AI/code role:
+Human role:
+
+Not allowed:
+Failure modes:
+Success metric:
+Evaluation examples needed:
+Proof artifact:
+```
+
+Worked example:
+
+```text
+System name: Support Reply Drafting System
+Primary user: Customer support teammate
+Current workflow: read ticket, search docs, draft reply, ask senior teammate if unsure
+Pain: repeated questions take too long to draft
+Baseline: median first-draft time = 12 minutes
+
+Input: customer ticket + account plan + approved support docs
+Output: draft reply with citations and needs-review flag
+Trusted information sources: help center, policy docs, account API
+
+AI role: summarize ticket, retrieve likely docs, draft reply
+Non-AI/code role: fetch account plan, enforce schema, validate citations
+Human role: approve before sending, handle exceptions
+
+Not allowed: send final reply, approve refund, invent policy
+Failure modes: wrong policy, missing citation, unsupported claim, risky case not escalated
+Success metric: draft time < 5 minutes and citation accuracy > 90%
+Evaluation examples needed: 20 past tickets with expected sources and review labels
+Proof artifact: eval report comparing baseline vs AI-assisted draft workflow
+```
+
+Acceptance criteria:
+
+- names a real user;
+- describes current workflow;
+- includes baseline;
+- defines input and output;
+- separates AI, code, and human roles;
+- lists unacceptable failures;
+- defines success metric;
+- names proof artifact.
+
+## Active Recall Questions
 
 1. Why is AI engineering system design, not model selection?
-2. What changes when system contains probabilistic component?
-3. Why is baseline required before building?
-4. What should be deterministic instead of AI-driven?
-5. What makes "internal copilot" too vague as requirement?
+2. What changes when a system includes probabilistic components?
+3. Why is "build an assistant" not a complete requirement?
+4. What should deterministic code own instead of a model?
+5. Why does every AI system need baseline before building?
+6. What is the difference between demo and evaluation?
+7. What belongs in `system-brief.md`?
 
-## Next
+## Summary
 
-This chapter defined AI engineering as system design. Next chapter asks harder question before any architecture: when should you refuse to use AI?
+AI engineering starts before prompts and models.
+
+The durable idea:
+
+```text
+AI system = workflow + software + data + model + human judgment + evaluation + feedback
+```
+
+A model is only one component.
+
+Good AI engineering begins by deciding:
+
+- what work should improve;
+- who the system serves;
+- what information is trusted;
+- what AI should and should not do;
+- how quality will be measured;
+- what failure looks like.
+
+Do not build the model first.
+
+Build the system brief first.
+
+## Preview of Next Chapter
+
+This chapter showed how to frame AI engineering as system design.
+
+Next chapter asks the harder first-principles question:
+
+> When should you refuse to use AI?
