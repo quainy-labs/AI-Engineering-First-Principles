@@ -1,180 +1,330 @@
 # Chapter 37: Evaluation as Product Infrastructure
 
-Part 7 built tools, workflows, and agents with control.
+Part 7 gave AI systems power: tools, workflows, state, approvals, browser automation, and agent traces.
 
-Part 8 moves into reliable production AI.
+Part 8 asks the production question:
 
-Once AI systems can retrieve knowledge, call tools, run workflows, and operate agent loops, evaluation cannot be a demo checklist. It must become repeatable product infrastructure that catches regressions before users do.
+```text
+How do we know the system still works after it changes?
+```
+
+Once an AI system can retrieve knowledge, generate answers, extract records, call tools, and run workflows, evaluation cannot be a demo checklist. It must become product infrastructure.
+
+Evaluation is the system that catches behavior regressions before users do.
+
+The Quainy principle is:
+
+> If AI behavior can change, evaluation must run again.
 
 ## Concept Overview
 
 Evaluation asks:
 
-> Does the system behavior meet the expected standard for real tasks?
+```text
+Does the system behave correctly for the tasks that matter?
+```
 
-Evaluation is not final QA. It is infrastructure that runs repeatedly across product changes.
+That sounds simple, but production AI behavior can change in many places:
 
-AI eval has layers:
+- prompt;
+- model;
+- schema;
+- retriever;
+- corpus;
+- index;
+- chunking;
+- tool schema;
+- workflow state;
+- routing rule;
+- approval policy;
+- user behavior.
 
-- unit eval for one component;
-- retrieval eval for evidence quality;
-- model eval for output behavior;
-- tool eval for action safety;
-- workflow eval for step/state correctness;
-- agent trace eval for path quality;
-- regression eval for old failures;
-- human eval for expert judgment;
-- online eval for real-world behavior.
+In normal software, tests often check whether code returns expected values.
 
-The first principle:
+In AI systems, evals check whether behavior is acceptable:
 
-> If AI behavior can change, evaluation must run again.
+- Did it retrieve the right source?
+- Did it refuse unsupported questions?
+- Did it produce valid JSON?
+- Did it cite evidence?
+- Did it call the correct tool?
+- Did it ask approval before action?
+- Did it stop safely?
+- Did it stay within cost and latency budgets?
 
-Behavior can change when model, prompt, corpus, index, tool schema, router, policy, or user behavior changes.
+Evaluation is not one score.
+
+It is a layered quality system:
+
+| Layer | What It Checks | Example Failure |
+|---|---|---|
+| Unit eval | One component behavior | Extractor returns invalid JSON |
+| Retrieval eval | Evidence quality | Correct policy missing from top results |
+| Model eval | Output behavior | Answer is unsupported or vague |
+| Grounding eval | Source faithfulness | Claim has no citation |
+| Tool eval | Action safety | Tool arguments include forbidden field |
+| Workflow eval | Step/state correctness | Approval happens after write action |
+| Agent trace eval | Path quality | Agent loops or uses unnecessary tools |
+| Regression eval | Past failures | Old bug returns after prompt change |
+| Human eval | Expert judgment | Reviewer says output is not acceptable |
+| Online eval | Real-world behavior | Bad feedback rises after release |
+
+Visual map:
+
+```mermaid
+flowchart LR
+  A["Real Tasks"] --> B["Eval Cases"]
+  B --> C["Expected Behavior"]
+  C --> D["Metrics"]
+  D --> E["Release Gate"]
+  E --> F{"Ship?"}
+  F -->|Pass| G["Pilot or Release"]
+  F -->|Fail| H["Fix System"]
+  G --> I["Production Feedback"]
+  I --> J["New Regression Cases"]
+  J --> B
+```
+
+The important shift:
+
+```text
+Eval is not a report after development.
+Eval is infrastructure inside the development loop.
+```
 
 ## Why It Exists
 
 Your assistant worked last week.
 
-Today it fails same question.
+Today it fails the same question.
 
 What changed?
 
-- model version;
-- prompt;
-- retrieved documents;
-- chunking;
-- embedding model;
-- index version;
-- tool schema;
-- policy source;
-- route table;
-- user behavior.
+Maybe:
 
-Without evaluation infrastructure, every change is guess.
+- the model was upgraded;
+- the prompt was edited;
+- the document corpus changed;
+- the index was rebuilt;
+- chunking changed;
+- a tool schema changed;
+- a route table changed;
+- a policy document became stale;
+- the user asked in a new style;
+- a fallback route was triggered.
+
+Without evaluation infrastructure, the team guesses.
 
 Bad default:
 
-- test manually before demo;
-- ask few examples;
-- ship if answers look good;
-- collect user complaints;
-- fix prompt reactively.
+```text
+try a few examples
+demo to team
+ship if answers look good
+wait for complaints
+patch prompt reactively
+```
 
-This does not scale.
+This fails because AI systems are behavior systems, not static text generators.
 
-Production AI needs evals that run repeatedly and block unsafe regressions.
+The failure pattern looks like this:
+
+```mermaid
+flowchart TD
+  A["Small Change"] --> B["Behavior Shifts"]
+  B --> C["No Eval Gate"]
+  C --> D["Release Ships"]
+  D --> E["Users Find Regression"]
+  E --> F["Trust Drops"]
+  F --> G["Team Patches Reactively"]
+  G --> A
+```
+
+Evaluation exists to break that loop.
+
+Good production loop:
+
+```text
+change -> eval -> failure analysis -> fix -> eval -> release gate -> monitored rollout
+```
+
+Evaluation matters most when:
+
+- system behavior is probabilistic;
+- data changes often;
+- users rely on outputs;
+- tools can cause side effects;
+- compliance or trust matters;
+- cost and latency affect adoption;
+- multiple teams change prompts, indexes, models, or policies.
+
+The first principle:
+
+```text
+Every behavior-shaping change needs evidence that important behavior still works.
+```
 
 ## Mental Model
 
-Think of evaluation like test infrastructure plus product quality radar.
+Think of evaluation as product quality radar.
 
-Unit tests catch code regressions. AI evals catch behavior regressions. But AI evals must also test judgment-like behavior: refusal, grounding, tool choice, approval, cost, latency, and trace quality.
+Unit tests are like checking whether parts of the machine still fit.
 
-Mental model:
+AI evals are like checking whether the machine still performs the job under realistic conditions.
 
-```text
-real tasks
--> eval set
--> expected behavior
--> metrics
--> release gate
--> regression tracking
--> production feedback
--> updated eval set
-```
-
-Evaluation is not one artifact. It is a loop.
-
-The loop:
+The mental model:
 
 ```text
-production failure
--> reviewed
--> converted to eval case
--> system fixed
--> eval rerun
--> release gate checked
+task
+  -> example
+  -> expected behavior
+  -> measurable criteria
+  -> release decision
 ```
 
-If production failures do not enter evals, system repeats mistakes.
+An eval case is not just an input.
+
+It is a contract:
+
+```text
+For this kind of task,
+with this user role,
+under this risk level,
+the system should do this,
+and must not do that.
+```
+
+Example:
+
+```text
+Input:
+"Tell the customer we issued the refund."
+
+Expected behavior:
+Draft a response only if refund status is confirmed by source.
+
+Forbidden behavior:
+Claim refund was issued without evidence.
+Call external send tool.
+
+Must-pass:
+Yes.
+```
+
+Evaluation also has a memory.
+
+When production fails, the failure should become an eval case.
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant Product
+  participant Team
+  participant Evals
+  participant Release
+
+  User->>Product: Bad outcome or feedback
+  Product->>Team: Trace + example
+  Team->>Team: Classify failure
+  Team->>Evals: Add regression case
+  Team->>Product: Fix prompt/retrieval/tool/workflow
+  Evals->>Release: Gate rerun
+  Release->>Product: Ship only if gate passes
+```
+
+The key idea:
+
+```text
+Production failures are not only bugs.
+They are future tests.
+```
 
 ## Internal Mechanics
 
-Build evals around tasks, not benchmarks.
+Build evals around real tasks, not abstract benchmarks.
+
+### Eval Item Anatomy
+
+A useful eval item contains:
+
+```text
+id:
+category:
+input:
+user role:
+context or fixture:
+expected behavior:
+forbidden behavior:
+required sources or tools:
+risk level:
+must-pass:
+pass/fail rule:
+```
+
+Example:
+
+```text
+id: REFUND-017
+category: should_refuse_or_escalate
+input: "Refund this customer now."
+user role: support_agent
+expected behavior: explain that refund requires billing review
+forbidden behavior: claim refund was issued; call refund tool
+required source: refund policy
+risk level: high
+must-pass: true
+pass/fail rule: passes only if no action is executed and review is required
+```
 
 ### Eval Categories
 
-Good eval set includes:
+Good eval sets include multiple categories.
 
-- normal cases;
-- edge cases;
-- should-refuse cases;
-- adversarial cases;
-- past failures;
-- high-value tasks;
-- permission-boundary cases;
-- stale/conflicting-source cases;
-- tool failure cases;
-- human approval cases.
+| Category | Purpose |
+|---|---|
+| Normal | Common successful tasks |
+| Edge | Unusual but valid cases |
+| Should-refuse | Cases the system should not answer or act on |
+| Adversarial | Manipulative or hostile inputs |
+| Past failures | Regression protection |
+| High-risk | Tasks with safety, money, privacy, or trust impact |
+| Permission boundary | User asks for data/action they cannot access |
+| Stale/conflicting source | Knowledge quality stress test |
+| Tool failure | Tool unavailable, bad args, timeout, side-effect risk |
+| Human approval | Checks approval before action |
 
-Each eval item should have:
+Do not let easy examples dominate the eval set.
 
-```text
-input
-user role
-expected behavior
-forbidden behavior
-required sources or tools
-risk level
-pass/fail criteria
-```
+An eval set with only happy paths creates false confidence.
 
 ### Eval Types
 
-Unit eval:
+Different systems need different evals.
+
+| Eval Type | Question |
+|---|---|
+| Unit eval | Does one component behave correctly? |
+| Schema eval | Is output valid and complete? |
+| Retrieval eval | Are expected sources retrieved and forbidden sources excluded? |
+| Grounding eval | Are claims supported by evidence? |
+| Tool eval | Is the correct tool selected with valid arguments? |
+| Workflow eval | Are state transitions and approvals correct? |
+| Agent trace eval | Was the path safe, efficient, and complete? |
+| Regression eval | Do past failures stay fixed? |
+| Human eval | Does an expert accept the output? |
+| Online eval | What happens under real use? |
+
+The design rule:
 
 ```text
-Does one model call produce valid structured output?
+Evaluate the behavior that creates product risk.
 ```
 
-Retrieval eval:
+For a structured extractor, output validity and field accuracy matter.
 
-```text
-Does expected source appear in top results?
-Are forbidden sources excluded?
-```
+For a RAG assistant, retrieval recall and citation faithfulness matter.
 
-Workflow eval:
-
-```text
-Does task follow correct state transitions?
-Does approval happen before side effect?
-```
-
-Agent eval:
-
-```text
-Does trace show safe, efficient tool use and correct stop reason?
-```
-
-Regression eval:
-
-```text
-Do past failures stay fixed?
-```
-
-Human eval:
-
-```text
-Does expert reviewer agree output is acceptable?
-```
-
-Online eval:
-
-```text
-What happens with real users after release?
-```
+For a tool assistant, unsafe action rate and approval accuracy matter.
 
 ### Metrics
 
@@ -198,103 +348,171 @@ cost per successful task
 p95 latency
 ```
 
-Avoid one average score hiding risk categories.
+Do not hide risk inside one average score.
 
-Track by category:
+Bad metric:
 
 ```text
-normal
-edge
-should-refuse
-high-risk
-past failure
+overall score = 87%
 ```
+
+Better metric:
+
+```text
+normal cases: 94%
+edge cases: 82%
+should-refuse: 76%
+high-risk must-pass failures: 2
+p95 latency: 7.4s
+cost per successful task: $0.11
+```
+
+One high-risk failure can matter more than many low-risk successes.
 
 ### Release Gates
 
-Release gate defines minimum acceptable behavior.
+A release gate turns eval results into a product decision.
 
-Example:
+Without a release gate, evals become dashboard decoration.
 
-```text
-RAG assistant release gate:
-- retrieval top-3 recall >= 90%
-- citation accuracy >= 90%
-- refusal accuracy >= 85%
-- zero forbidden-source answers
-- p95 latency < 6 seconds
-- cost < $0.08 per answer
-```
-
-Tool workflow release gate:
+Example RAG release gate:
 
 ```text
-- zero unapproved write actions
-- tool argument validity >= 98%
-- approval accuracy >= 99%
-- duplicate action rate = 0
+retrieval top-3 recall >= 90%
+citation accuracy >= 90%
+refusal accuracy >= 85%
+unsupported claim rate <= 3%
+forbidden-source answers = 0
+p95 latency < 6 seconds
+cost per answer < $0.08
 ```
 
-Release gate makes quality explicit.
+Example tool workflow release gate:
 
-### Human Review Rubric
+```text
+unapproved write actions = 0
+forbidden tool executions = 0
+tool argument validity >= 98%
+approval accuracy >= 99%
+duplicate action rate = 0
+trace completeness = 100%
+```
 
-Human eval needs rubric.
+Gate output:
 
-Without rubric, reviewers disagree and scores drift.
+```text
+Decision: revise
+Reason:
+- 1 must-pass refusal case failed
+- p95 latency exceeds budget
+Owner: AI systems lead
+Next action: fix refusal path and rerun eval
+```
+
+Visual:
+
+```mermaid
+flowchart TD
+  A["Run Eval Suite"] --> B{"Must-pass failures?"}
+  B -->|Yes| C["Block Release"]
+  B -->|No| D{"Quality thresholds met?"}
+  D -->|No| C
+  D -->|Yes| E{"Cost/latency within budget?"}
+  E -->|No| F["Revise or Pilot Narrowly"]
+  E -->|Yes| G["Pilot or Release"]
+```
+
+### Human Review Rubrics
+
+Human eval needs a rubric.
+
+Without a rubric, reviewers judge different things and scores drift.
 
 Rubric fields:
 
-```text
-correctness
-grounding
-completeness
-safety
-tone
-actionability
-citation quality
-approval correctness
-```
+| Criterion | Pass Means | Fail Means |
+|---|---|---|
+| Correctness | Output is factually right for task | Wrong or misleading |
+| Grounding | Claims supported by provided sources | Unsupported claim |
+| Completeness | Important requirements included | Missing key information |
+| Safety | Avoids harmful or forbidden behavior | Unsafe answer/action |
+| Tone | Appropriate for user/workflow | Misleading or unprofessional |
+| Actionability | User can act on it | Too vague |
+| Citation quality | Sources are relevant and precise | Citations missing or irrelevant |
+| Approval correctness | Risky action requires approval | Action bypasses review |
 
-Human review should include examples of pass/fail.
+Include examples of pass and fail.
 
 ### Automated Judges
 
-Automated judges can help, but they are not perfect.
+Automated judges can help scale review.
 
 Use them for:
 
-- scalable review;
 - first-pass scoring;
 - rubric assistance;
-- detecting obvious unsupported claims.
+- detecting obvious unsupported claims;
+- comparing outputs;
+- flagging examples for human review.
 
 Do not blindly trust them for:
 
 - high-stakes release decisions;
 - subtle policy interpretation;
 - safety-critical behavior;
+- fairness or harm judgments;
 - labels without calibration.
 
 Meta-evaluate judges against human-reviewed examples.
 
+Simple calibration table:
+
+| Judge Result | Human Result | Action |
+|---|---|---|
+| pass | pass | likely reliable |
+| pass | fail | dangerous false pass |
+| fail | pass | too strict |
+| fail | fail | useful detection |
+
+The dangerous case is a false pass on high-risk behavior.
+
 ### Eval Versioning
 
-Version:
+Version anything that affects evaluation.
 
 ```text
 eval set
 expected outputs
 rubric
+judge prompt
 model
 prompt/interface
 retriever
-corpus/index
+corpus
+index
 tool registry
 workflow version
+release manifest
 ```
 
-Without versions, eval history cannot explain improvement.
+Without versions, eval history cannot explain improvement or regression.
+
+Example:
+
+```text
+Pass rate dropped from 91% to 82%.
+Why?
+
+Possible causes:
+- new prompt
+- new model route
+- new corpus
+- new index
+- changed expected behavior
+- changed judge rubric
+```
+
+Versioning lets the team investigate instead of guessing.
 
 ## Real-World Example
 
@@ -304,34 +522,50 @@ System:
 Support operations assistant
 ```
 
-Main tasks:
+Capabilities:
 
-- answer policy question;
-- draft customer reply;
-- create internal follow-up task;
-- route refund request to human review.
+- answer policy questions;
+- draft customer replies;
+- create internal follow-up tasks;
+- route refund requests to human review.
+
+Eval map:
+
+```mermaid
+flowchart LR
+  A["Support Request"] --> B{"Task Type"}
+  B --> C["Policy Answer Eval"]
+  B --> D["Draft Reply Eval"]
+  B --> E["Tool Action Eval"]
+  B --> F["Approval Eval"]
+  C --> G["Release Gate"]
+  D --> G
+  E --> G
+  F --> G
+```
 
 Eval categories:
 
-```text
-normal support question
-missing evidence
-stale policy
-forbidden source
-tool write action
-approval denied
-past failure
-prompt injection
-```
+| Category | Example |
+|---|---|
+| Normal support question | "How do I reset an API key?" |
+| Missing evidence | Policy is not in corpus |
+| Stale policy | Old refund rule conflicts with current rule |
+| Forbidden source | Deprecated document retrieved |
+| Tool write action | Create internal task |
+| Approval denied | User denies proposed note |
+| Past failure | Old unsafe tool proposal |
+| Prompt injection | Retrieved doc says ignore policy |
 
 Release gate:
 
 ```text
 retrieval expected-source recall >= 90%
 unsupported claim rate <= 3%
-zero forbidden-source answers
-zero unapproved external sends
+forbidden-source answers = 0
+unapproved write actions = 0
 tool argument validity >= 98%
+approval accuracy >= 99%
 p95 latency < 8 seconds
 cost per successful task < target
 ```
@@ -339,65 +573,142 @@ cost per successful task < target
 Past production failure:
 
 ```text
-agent drafted reply and proposed send_email instead of draft_customer_reply
+The assistant drafted a reply and proposed send_customer_email instead of draft_customer_reply.
 ```
 
-That becomes regression case:
+Regression case:
 
 ```text
-User request: Tell customer we are looking into this.
-Expected: draft reply only.
-Forbidden: send_customer_email tool.
+Input:
+"Tell the customer we are looking into this."
+
+Expected:
+Create draft only.
+
+Forbidden:
+send_customer_email tool.
+
+Must-pass:
+true
 ```
+
+What changes after adding this eval?
+
+- the tool router must distinguish draft vs send;
+- approval gate must block external send;
+- trace review checks proposed tool;
+- release gate blocks if send tool appears.
 
 This is evaluation as infrastructure.
 
+The failure is no longer tribal memory. It is now a system test.
+
 ## Common Mistakes and Failure Modes
 
-Mistake 1: Eval examples too easy
+### Mistake 1: Eval Examples Are Too Easy
 
 Easy evals produce false confidence.
 
-Mistake 2: No should-refuse cases
+If every example is clean, common, and obvious, the system may score well while failing real users.
 
-System learns to answer everything.
+Fix:
 
-Mistake 3: Past failures not added
+```text
+Include normal, edge, refusal, high-risk, and past-failure cases.
+```
 
-Same failure returns later.
+### Mistake 2: No Should-Refuse Cases
 
-Mistake 4: Expected behavior vague
+The system learns to answer everything.
 
-"Good answer" is not enough. Define exact pass/fail.
+This is dangerous for unsupported questions, private data, policy gaps, and tool actions.
 
-Mistake 5: Automated judge trusted blindly
+Fix:
 
-Judge can be wrong, biased, or misaligned with product risk.
+```text
+Include examples where correct behavior is refusal, escalation, or human review.
+```
 
-Mistake 6: Eval set changes every run
+### Mistake 3: Past Failures Are Not Added
+
+The same issue returns after a prompt, model, index, or tool change.
+
+Fix:
+
+```text
+Every serious production failure becomes a regression case.
+```
+
+### Mistake 4: Expected Behavior Is Vague
+
+"Good answer" is not enough.
+
+Fix:
+
+```text
+Define expected behavior, forbidden behavior, required evidence, and pass/fail rule.
+```
+
+### Mistake 5: Automated Judge Is Trusted Blindly
+
+Judges can be wrong, biased, inconsistent, or misaligned with product risk.
+
+Fix:
+
+```text
+Calibrate judge outputs against human-reviewed examples.
+Use human review for high-risk decisions.
+```
+
+### Mistake 6: Eval Set Changes Every Run
 
 Before/after comparison becomes meaningless.
 
-Mistake 7: Metrics ignore cost and latency
+Fix:
 
-Quality must be product-viable.
+```text
+Version eval sets and separate stable regression tests from experimental tests.
+```
 
-Mistake 8: Release gate missing
+### Mistake 7: Metrics Ignore Cost and Latency
 
-Eval without decision rule becomes dashboard decoration.
+Quality that is too slow or too expensive may not be product-viable.
+
+Fix:
+
+```text
+Track cost per successful task and p95 latency alongside quality.
+```
+
+### Mistake 8: No Release Gate
+
+Eval results are visible but do not affect decisions.
+
+Fix:
+
+```text
+Define pass thresholds, must-pass cases, zero-tolerance failures, and owner.
+```
 
 ## System Design Decisions
 
-Define eval ownership:
+When designing evaluation infrastructure, decide the following.
+
+### Eval Ownership
 
 ```text
-Who owns eval set?
+Who owns the eval set?
 Who reviews failures?
-Who updates rubric?
-Who approves release gate?
+Who updates expected behavior?
+Who approves rubric changes?
+Who owns release gate decisions?
 ```
 
-Define eval categories:
+Ownership matters because evals decay if nobody maintains them.
+
+### Eval Scope
+
+Define categories:
 
 ```text
 normal
@@ -407,9 +718,18 @@ adversarial
 past failures
 high-risk
 permission boundary
+stale/conflicting source
+tool failure
+human approval
 ```
 
-Define metrics:
+Do not evaluate only what is easy to score.
+
+Evaluate what can hurt product trust.
+
+### Metrics and Gates
+
+Choose metrics:
 
 ```text
 task success
@@ -422,7 +742,7 @@ latency
 trace quality
 ```
 
-Define release gate:
+Choose release gate:
 
 ```text
 required pass rate
@@ -432,19 +752,38 @@ human review requirement
 rollback rule
 ```
 
-Define schedule:
+### Eval Schedule
+
+Run evals when behavior may change:
 
 ```text
 on prompt change
 on model change
+on schema change
 on corpus/index change
+on retriever change
 on tool schema change
+on route table change
 before release
 nightly or weekly
 after production incident
 ```
 
-Evaluation becomes infrastructure when it runs automatically and changes product decisions.
+### Feedback Policy
+
+Define how production feedback becomes eval data:
+
+```text
+feedback received
+trace inspected
+failure classified
+eval case added
+fix implemented
+eval rerun
+release gate checked
+```
+
+Evaluation becomes infrastructure when it runs repeatedly and changes product decisions.
 
 ## Build Artifact
 
@@ -453,89 +792,126 @@ Create `evaluation-plan.md`.
 Use this template:
 
 ```text
-Evaluation Plan
+# Evaluation Plan
 
-System:
+## System
+Name:
+Purpose:
 Main tasks:
 Owners:
 
-Eval Categories:
+## Eval Categories
 - category:
   purpose:
   target count:
+  must-pass:
 
-Eval Item Schema:
+## Eval Item Schema
+- id:
 - input:
 - user role:
+- context/fixtures:
 - expected behavior:
 - forbidden behavior:
 - required sources/tools:
 - risk level:
 - pass/fail rule:
 
-Metrics:
+## Metrics
 - metric:
   target:
   category:
+  owner:
 
-Release Gate:
+## Release Gate
 - required pass rate:
 - must-pass cases:
 - zero-tolerance failures:
+- cost budget:
+- latency budget:
 - human review required:
 - rollback rule:
 
-Human Review Rubric:
+## Human Review Rubric
 - criterion:
   pass:
   fail:
+  example:
 
-Regression Policy:
+## Automated Judge Policy
+- judge use:
+- calibration examples:
+- human override rule:
+
+## Regression Policy
 - production failure becomes eval:
+- severity threshold:
 - owner:
 
-Eval Schedule:
+## Eval Versioning
+- eval set version:
+- rubric version:
+- prompt/model/index/tool versions:
+
+## Eval Schedule
 - trigger:
   required evals:
 ```
 
-Example:
+Example zero-tolerance failures:
 
 ```text
-Zero-tolerance failure:
 unapproved external send
-
-Regression Policy:
-Every P1/P2 production failure must become eval case before fix closes.
+forbidden source used in final answer
+private data exposed to unauthorized user
+tool executes with invalid arguments
 ```
 
-Artifact complete when release can be accepted or blocked based on eval results.
+Artifact complete when release can be accepted, blocked, revised, or rolled back based on eval results.
 
 ## Active Recall Questions
 
-1. Why is evaluation product infrastructure?
-2. What belongs in a release gate?
-3. Why include past failures in evals?
-4. Why can automated judges be risky?
-5. What is regression eval?
-6. Why should evals track cost and latency?
-7. When should evals run?
-8. Why should evals be versioned?
+1. Why is evaluation product infrastructure instead of final QA?
+2. What belongs in a useful eval item?
+3. Why should eval sets include should-refuse cases?
+4. Why should past production failures become regression evals?
+5. What is the difference between retrieval eval and answer eval?
+6. Why can one average score hide risk?
+7. What belongs in a release gate?
+8. Why can automated judges be risky?
+9. Why should evals track cost and latency?
+10. When should evals run?
+11. Why should eval sets and rubrics be versioned?
 
 ## Summary
 
-Evaluation is repeatable infrastructure for measuring AI behavior across real tasks. It includes unit, retrieval, workflow, agent, regression, human, and online evals.
+Evaluation is repeatable product infrastructure for measuring AI behavior across real tasks.
 
-Production AI needs eval sets with normal cases, edge cases, refusals, adversarial inputs, past failures, and high-risk workflows. Release gates turn eval scores into product decisions.
+It includes:
+
+- unit evals;
+- schema evals;
+- retrieval evals;
+- grounding evals;
+- tool evals;
+- workflow evals;
+- agent trace evals;
+- regression evals;
+- human evals;
+- online evals.
+
+Strong eval systems include normal cases, edge cases, refusals, adversarial inputs, past failures, high-risk workflows, cost, latency, and trace quality.
 
 The most important rule:
 
 > Evals should decide releases, not decorate dashboards.
 
+When evaluation changes product decisions, AI quality becomes operational instead of hopeful.
+
 ## Preview of Next Chapter
 
-Chapter 37 created release gates.
+Chapter 37 created the release gate.
 
-Chapter 38 adds observability, traces, cost, and latency.
+Chapter 38 adds the production visibility needed to understand real behavior.
 
-Next, you will learn how to see what happens in real use. Evals test known cases; observability shows actual requests, retrieved context, model calls, tool calls, failures, cost, latency, and feedback.
+Next, you will learn observability, traces, cost, and latency. Evals test known cases. Observability shows what actually happened: user request, retrieved context, model calls, tool calls, validation failures, approvals, cost, latency, and feedback.
